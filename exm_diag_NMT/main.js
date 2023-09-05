@@ -3,13 +3,12 @@ const URL = 'https://reqres.in/api/users/';
 const getPersons = async () => {
     const resp = await fetch(URL);
     const {data} = await resp.json();
-    
-    console.log(typeof(data))
+
 
     const table = document.querySelector('#table');
-    data.map( (i,x) => {
+    data.forEach( (i,x) => {
         table.innerHTML+= `
-        <tr class="text-center">z
+        <tr class="text-center">
             <th scope="row">${x+1}</th>
             <td>${i.first_name} ${i.last_name}</td>
             <td>${i.email}</td>
@@ -19,7 +18,7 @@ const getPersons = async () => {
                 </button>
             </td>
             <td> 
-                <button type="button" class="btn btn-warning" style="color : white;" onclick="editPerson(${i.id})">
+                <button type="button" class="btn btn-warning" style="color : white;" onclick="editPerson(${i.id})" data-bs-toggle="modal" data-bs-target="#getPerson">
                     <i class="fa-solid fa-pen-to-square"></i>
                 </button>
             </td>
@@ -42,15 +41,37 @@ const getPerson = async ( id ) => {
     document.querySelector("#name").value = data.first_name;
     document.querySelector("#lastname").value = data.last_name;
     document.querySelector("#email").value = data.email;
+
+    document.querySelector("#name").classList.add("disabled")
+    document.querySelector("#lastname").classList.add("disabled")
+    document.querySelector("#email").classList.add("disabled")
 }
 
-const createPerson = async () => {
+const buttonRegister = document.querySelector("#buttonRegister");
+buttonRegister.addEventListener('click', () => {
+    const button = document.createElement("button");
+    button.textContent = "Registrar";
+    button.classList.add("btn")
+    button.classList.add("btn-success")
 
-}
-
-const detailPerson = async ( id ) => {
-
-}
+    button.onclick =  async () => {
+        await fetch(URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json', 
+            },
+            body: JSON.stringify({
+                first_name :  document.querySelector("#name").value,
+                last_name : document.querySelector("#lastname").value,
+                email : document.querySelector("#email").value,
+            }), 
+        }).then( resp => resp.json() )
+        .then( data => console.log(data), getPersons(), )
+        .catch( console.error );
+    }
+    
+    document.querySelector("#containerButton").appendChild(button);
+});
 
 
 
@@ -62,13 +83,37 @@ const editPerson = async ( id ) => {
     document.querySelector("#lastname").value = data.last_name;
     document.querySelector("#email").value = data.email;
 
-    document.querySelector("#containerButton")
+    const button = document.createElement("button");
+    button.textContent = "Modificar";
+    button.classList.add("btn")
+    button.classList.add("btn-success")
+    button.onclick = async () => {
+            await fetch(URL+id, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json', 
+            },
+            body: JSON.stringify({
+                first_name :  document.querySelector("#name").value,
+                last_name : document.querySelector("#lastname").value,
+                email : document.querySelector("#email").value,
+            }), 
+        });
+    };
 
-    //<button type="button" class="btn btn-primary" id="button">Save changes</button>
+    document.querySelector("#containerButton").appendChild( button )
+
 }
 
 const deletePerson = async( id ) =>{
-    await fetch(URL+id,{ method: 'DELETE' })
+    await fetch(URL+id,{ 
+        method: 'DELETE',
+        headers: {
+            'Content-Type': 'application/json', 
+        },
+    }).then( resp => resp.json() )
+    .then( resp => alert("Eliminación echa"))
+    .catch( alert )
 }
 
 getPersons();
