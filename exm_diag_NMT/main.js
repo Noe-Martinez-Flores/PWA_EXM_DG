@@ -6,6 +6,7 @@ const getPersons = async () => {
 
 
     const table = document.querySelector('#table');
+    table.innerHTML = '';
     data.forEach( (i,x) => {
         table.innerHTML+= `
         <tr class="text-center">
@@ -34,7 +35,7 @@ const getPersons = async () => {
 }
 
 const getPerson = async ( id ) => {
-
+    document.querySelector("#containerButton").innerHTML = "";
     const resp = await fetch(URL+id);
     const {data} = await resp.json();
     console.log(data)
@@ -49,6 +50,7 @@ const getPerson = async ( id ) => {
 
 const buttonRegister = document.querySelector("#buttonRegister");
 buttonRegister.addEventListener('click', () => {
+    document.querySelector("#containerButton").innerHTML = "";
     const button = document.createElement("button");
     button.textContent = "Registrar";
     button.classList.add("btn")
@@ -76,6 +78,7 @@ buttonRegister.addEventListener('click', () => {
 
 
 const editPerson = async ( id ) => {
+    document.querySelector("#containerButton").innerHTML = "";
     const resp = await fetch(URL+id);
     const {data} = await resp.json();
     console.log(data)
@@ -99,21 +102,27 @@ const editPerson = async ( id ) => {
                 email : document.querySelector("#email").value,
             }), 
         });
+        getPersons();
     };
 
     document.querySelector("#containerButton").appendChild( button )
 
 }
 
-const deletePerson = async( id ) =>{
-    await fetch(URL+id,{ 
-        method: 'DELETE',
-        headers: {
-            'Content-Type': 'application/json', 
-        },
-    }).then( resp => resp.json() )
-    .then( resp => alert("Eliminación echa"))
-    .catch( alert )
-}
+const deletePerson = async (id) => {
+    try {
+        await fetch(URL + id, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+
+        alert("Eliminación realizada");
+        getPersons();
+    } catch (error) {
+        console.error('Error en la solicitud:', error);
+    }
+};
 
 getPersons();
