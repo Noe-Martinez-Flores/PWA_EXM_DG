@@ -34,7 +34,14 @@ const getPersons = async () => {
     });
 }
 
+const cleanFields = () => {
+    document.querySelector("#name").value = "";
+    document.querySelector("#lastname").value= "";
+    document.querySelector("#email").value = "";
+}
+
 const getPerson = async ( id ) => {
+    cleanFields();
     document.querySelector("#containerButton").innerHTML = "";
     const resp = await fetch(URL+id);
     const {data} = await resp.json();
@@ -50,6 +57,7 @@ const getPerson = async ( id ) => {
 
 const buttonRegister = document.querySelector("#buttonRegister");
 buttonRegister.addEventListener('click', () => {
+    cleanFields();
     document.querySelector("#containerButton").innerHTML = "";
     const button = document.createElement("button");
     button.textContent = "Registrar";
@@ -78,6 +86,7 @@ buttonRegister.addEventListener('click', () => {
 
 
 const editPerson = async ( id ) => {
+    cleanFields();
     document.querySelector("#containerButton").innerHTML = "";
     const resp = await fetch(URL+id);
     const {data} = await resp.json();
